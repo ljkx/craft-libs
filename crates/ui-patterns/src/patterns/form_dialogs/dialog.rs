@@ -563,7 +563,10 @@ impl<'a> ParamDialog<'a> {
                 draw(ui, values);
             }
             *cx.memory::<Live>() = live.clone();
-            true
+            // OK and Enter wait in the pass a typed value past a row's range was clamped: the Enter or click that left
+            // the field shows the range alert over the open dialog, as the reference does, rather than also answering OK
+            // with the clamped value (and losing the alert with the dialog).
+            rows.as_ref().is_none_or(|rows| rows.out_of_range.is_none())
         });
 
         // `picked` is this pass's press: a second pass of the frame has none, so a press is reported once.

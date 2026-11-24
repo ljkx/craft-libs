@@ -592,6 +592,8 @@ impl<'p> Pass<'p> {
         let value = self.work.int(line.key).unwrap_or(0);
         let range = bounds(min.map(|m| m as f64), max.map(|m| m as f64));
         let random = line.param.option().randomize();
+        // Emptied text takes the row's empty value, when it has one ([`Param::empty_value`]); else it keeps the value.
+        let empty = line.param.option().empty_value().map(|v| v as f64);
         line.show(ui, |ui| {
             beside(ui, |ui| {
                 let mut field = line.scalar_field(self.units, value as f64, WHOLE).id_salt("field");
@@ -600,7 +602,7 @@ impl<'p> Pass<'p> {
                 }
                 let shown = field.show(ui);
                 self.alert(shown.out_of_range);
-                if let Some(v) = shown.edit.value().cloned().flatten() {
+                if let Some(v) = shown.edit.value().cloned().and_then(|v| v.or(empty)) {
                     self.work.set(line.key, FieldValue::Int(v.round() as i64));
                 }
                 if random && clicked(&Button::new(self.words.randomize.clone()).id_salt("random").show(ui)) {

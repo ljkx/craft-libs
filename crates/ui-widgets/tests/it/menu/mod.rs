@@ -6,6 +6,8 @@ pub(crate) mod closed;
 
 pub(crate) mod companion;
 
+pub(crate) mod ends;
+
 pub(crate) mod native;
 
 pub(crate) mod openers;
